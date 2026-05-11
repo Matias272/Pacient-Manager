@@ -1,15 +1,13 @@
-import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View, SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
+  const [testPatientCount, setTestPatientCount] = useState(0);
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <Text>Pacient Manager App</Text>
-      </View>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <Text>Patient manager</Text>
+    </SafeAreaProvider>
   );
 }
 

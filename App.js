@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, StatusBar } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { FlatList } from "react-native-web";
 import PatientCard from "./src/components/PatientCard";
+import DashboardScreen from "./src/screens/DashboardScreen";
 
 export default function App() {
   return (
@@ -32,11 +33,10 @@ function Content() {
         <Text style={styles.title}>Patient Manager</Text>
       </View>
       <Text style={styles.counterText}>Active Patients: {patients.length}</Text>
-
       <FlatList
         data={patients}
         keyExtractor={(item) => item.id}
-        renderItem={({item}) => <PatientCard patient={item} />}
+        renderItem={({ item }) => <PatientCard patient={item} />}
       />
     </SafeAreaView>
   );

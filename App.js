@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, StatusBar } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { FlatList } from "react-native-web";
+import { FlatList } from "react-native";
 import PatientCard from "./src/components/PatientCard";
 import DashboardScreen from "./src/screens/DashboardScreen";
 

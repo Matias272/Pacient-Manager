@@ -32,7 +32,6 @@ function Content() {
         <Text style={styles.title}>Patient Manager</Text>
       </View>
       <Text style={styles.counterText}>Active Patients: {patients.length}</Text>
-      <PatientCard />
 
       <FlatList
         data={patients}

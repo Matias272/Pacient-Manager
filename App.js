@@ -9,10 +9,9 @@ import MainDashboard from './src/screens/DashboardScreen';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    'Petit-Script': PetitFormalScript_400Regular, // Give it a clean alias string
+    'Petit-Script': PetitFormalScript_400Regular,
   });
 
-  // 3. Keep the screen loading until the phone finishes caching the fonts
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>

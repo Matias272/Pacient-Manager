@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, StatusBar, FlatList } from "react-native";
+import { StyleSheet, Text, View, StatusBar, FlatList, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PatientCard from "../components/PatientCard";
 export default function DashboardScreen() {
@@ -22,13 +22,13 @@ export default function DashboardScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Patient Manager</Text>
       </View>
-      {/* <Text style={styles.counterText}>Active Patients: {patients.length}</Text> */}
+      <Text style={styles.counterText}>Active Patients: {patients.length}</Text>
       <FlatList
         style={styles.patientList}
         data={patients}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <PatientCard patient={item} />}
-      />
+      />      
     </SafeAreaView>
   );
 }
@@ -54,7 +54,9 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   counterText: {
+    textAlign: "center",
     color: "#8E8E93",
+    marginBottom: 20,
     fontSize: 14,
   },
 });

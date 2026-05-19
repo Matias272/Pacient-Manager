@@ -1,75 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useFonts } from 'expo-font';
-import { PetitFormalScript_400Regular } from '@expo-google-fonts/petit-formal-script';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
+import { PetitFormalScript_400Regular } from "@expo-google-fonts/petit-formal-script";
 
-
-import MainDashboard from './src/screens/DashboardScreen';
-import PatientDetailsScreen from './src/screens/PatientDetailsScreen';
-import { PatientStorage } from './src/utils/storage';
+import MainDashboard from "./src/screens/DashboardScreen";
+import PatientDetailsScreen from "./src/screens/PatientDetailsScreen";
+import { PatientStorage } from "./src/utils/storage";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    'Petit-Script': PetitFormalScript_400Regular,
+    "Petit-Script": PetitFormalScript_400Regular,
   });
   const [patients, setPatients] = useState([]);
   const [loadingPatients, setLoadingPatients] = useState(true);
-  const [activeScreen, setActiveScreen] = useState('dashboard');
+  const [activeScreen, setActiveScreen] = useState("dashboard");
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  useEffect(() => {
-    const loadPatients = async () => {
-      setLoadingPatients(true);
-      const storedPatients = await PatientStorage.getAll();
-      setPatients(storedPatients);
-      setLoadingPatients(false);
-    };
+  const loadPatients = async () => {
+    setLoadingPatients(true);
+    const storedPatients = await PatientStorage.getAll();
+    setPatients(storedPatients);
+    setLoadingPatients(false);
+  };
 
+  useEffect(() => {
     loadPatients();
   }, []);
 
   const handleCreatePatient = async (patient) => {
-    const createdPatient = await PatientStorage.create(patient);
-    setPatients((currentPatients) => [createdPatient, ...currentPatients]);
+    await PatientStorage.create(patient);
+    await loadPatients();
   };
 
   const handleUpdatePatient = async (patient) => {
     const updatedPatient = await PatientStorage.update(patient);
-    setPatients((currentPatients) =>
-      currentPatients.map((currentPatient) =>
-        currentPatient.id === updatedPatient.id ? updatedPatient : currentPatient
-      )
-    );
+    await loadPatients();
 
     setSelectedPatient((currentSelected) =>
-      currentSelected?.id === updatedPatient.id ? updatedPatient : currentSelected
+      currentSelected?.id === updatedPatient.id
+        ? updatedPatient
+        : currentSelected,
     );
   };
 
   const handleDeletePatient = async (patientId) => {
-    await PatientStorage.remove(patientId);
-    setPatients((currentPatients) =>
-      currentPatients.filter((patient) => patient.id !== patientId)
-    );
+    const wasSelected = selectedPatient?.id === patientId;
+    const nextPatients = patients.filter((patient) => patient.id !== patientId);
+
+    setPatients(nextPatients);
+    await PatientStorage.saveAll(nextPatients);
+
+    if (wasSelected) {
+      setSelectedPatient(null);
+      setActiveScreen("dashboard");
+      return;
+    }
 
     setSelectedPatient((currentSelected) =>
-      currentSelected?.id === patientId ? null : currentSelected
+      currentSelected?.id === patientId ? null : currentSelected,
     );
-
-    if (selectedPatient?.id === patientId) {
-      setActiveScreen('dashboard');
-    }
   };
 
   const handleOpenPatientDetails = (patient) => {
     setSelectedPatient(patient);
-    setActiveScreen('details');
+    setActiveScreen("details");
   };
 
   const handleClosePatientDetails = () => {
     setSelectedPatient(null);
-    setActiveScreen('dashboard');
+    setActiveScreen("dashboard");
   };
 
   if (!fontsLoaded) {
@@ -81,10 +81,11 @@ export default function App() {
   }
   return (
     <SafeAreaProvider>
-      {activeScreen === 'details' && selectedPatient ? (
+      {activeScreen === "details" && selectedPatient ? (
         <PatientDetailsScreen
           patient={selectedPatient}
           onBack={handleClosePatientDetails}
+          onDelete={handleDeletePatient}
         />
       ) : (
         <MainDashboard
@@ -103,8 +104,8 @@ export default function App() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#1C1C1E',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#1C1C1E",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -37,6 +37,9 @@ export default function DashboardScreen({
   const [editingPatient, setEditingPatient] = useState(null);
   const [formData, setFormData] = useState(emptyForm);
 
+  const activeCount = patients.length;
+  const latestPatient = patients[0];
+
   const openCreateForm = () => {
     setEditingPatient(null);
     setFormData(emptyForm);
@@ -101,33 +104,46 @@ export default function DashboardScreen({
   };
 
   const confirmDeletePatient = (patient) => {
-    Alert.alert(
-      "Delete patient",
-      `Remove ${patient.name} from the list?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => onDeletePatient(patient.id),
-        },
-      ]
-    );
+    Alert.alert("Delete patient", `Remove ${patient.name} from the list?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => onDeletePatient(patient.id),
+      },
+    ]);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Patient Manager</Text>
-          <Text style={styles.subtitle}>Manage the current patient list</Text>
+      <View style={styles.hero}>
+        <View style={styles.header}>
+          <View style={styles.headerCopy}>
+            <Text style={styles.kicker}>Clinic overview</Text>
+            <Text style={styles.title}>Patient Manager</Text>
+            <Text style={styles.subtitle}>
+              A clear, searchable view of your current roster.
+            </Text>
+          </View>
+          <Pressable style={styles.addButton} onPress={openCreateForm}>
+            <Text style={styles.addButtonText}>Add Patient</Text>
+          </Pressable>
         </View>
-        <Pressable style={styles.addButton} onPress={openCreateForm}>
-          <Text style={styles.addButtonText}>Add Patient</Text>
-        </Pressable>
+
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Active</Text>
+            <Text style={styles.statValue}>{activeCount}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Latest</Text>
+            <Text style={styles.statValue} numberOfLines={1}>
+              {latestPatient ? latestPatient.name : "None"}
+            </Text>
+          </View>
+        </View>
       </View>
-      <Text style={styles.counterText}>Active Patients: {patients.length}</Text>
 
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -136,6 +152,7 @@ export default function DashboardScreen({
       ) : (
         <FlatList
           style={styles.patientList}
+          contentContainerStyle={styles.patientListContent}
           data={patients}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -228,7 +245,10 @@ export default function DashboardScreen({
                 <Pressable style={styles.secondaryButton} onPress={closeForm}>
                   <Text style={styles.secondaryButtonText}>Cancel</Text>
                 </Pressable>
-                <Pressable style={styles.primaryButton} onPress={handleSavePatient}>
+                <Pressable
+                  style={styles.primaryButton}
+                  onPress={handleSavePatient}
+                >
                   <Text style={styles.primaryButtonText}>
                     {editingPatient ? "Save Changes" : "Create Patient"}
                   </Text>
@@ -245,47 +265,91 @@ export default function DashboardScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F8FC",
+    backgroundColor: "#F3F6FB",
+  },
+  hero: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 12,
+    backgroundColor: "#F8FAFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5ECF6",
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 12,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
+    alignItems: "flex-start",
+  },
+  headerCopy: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  kicker: {
+    color: "#2563EB",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    marginBottom: 6,
   },
   title: {
     fontFamily: "Petit-Script",
-    color: "#2563EB",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 5,
+    color: "#0F172A",
+    fontSize: 30,
+    fontWeight: "700",
+    marginBottom: 6,
   },
   subtitle: {
-    color: "#6B7280",
-    fontSize: 13,
+    color: "#64748B",
+    fontSize: 14,
+    lineHeight: 20,
   },
   addButton: {
-    backgroundColor: "#111827",
+    backgroundColor: "#0F172A",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 999,
+    borderRadius: 18,
   },
   addButtonText: {
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 13,
   },
-  patientList: {
-    paddingHorizontal: 10,
+  statsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 16,
   },
-  counterText: {
-    textAlign: "center",
-    color: "#8E8E93",
-    marginBottom: 12,
-    fontSize: 14,
+  statCard: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: "#E5ECF6",
+  },
+  statLabel: {
+    color: "#64748B",
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  statValue: {
+    color: "#0F172A",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  patientList: {
+    flex: 1,
+  },
+  patientListContent: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 24,
   },
   loadingContainer: {
     flex: 1,
